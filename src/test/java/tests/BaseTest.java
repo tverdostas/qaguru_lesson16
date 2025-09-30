@@ -8,6 +8,5 @@ public class BaseTest {
     @BeforeAll
     public static void setUp() {
         RestAssured.baseURI = "https://demoqa.com";
-        //RestAssured.basePath = "/api";
     }
 }

@@ -1,40 +1,53 @@
 package tests;
 
-import io.restassured.response.Response;
+import models.AddBookBody;
+import models.UserLoginResponse;
+import models.UserResponse;
+
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.Cookie;
+import pages.ProfilePage;
+import steps.ApiSteps;
 
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static io.qameta.allure.Allure.step;
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static specs.RequestSpec.request;
-import static specs.ResponseSpec.responseSpec;
+import java.util.List;
+
+import static com.codeborne.selenide.Selenide.confirm;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static tests.TestData.username;
 
 public class DeleteBookTest extends BaseTest {
     @Test
-    @Tag("api")
-    @DisplayName("При авторизации ответ с токеном не пустой")
+    @Tag("")
+    @DisplayName("")
     void successfulDeleteBookTest() {
-        String authData = "{\"userName\":\"elka\",\"password\":\"QWE%qwe123\"}";
 
-        Response response =
-                given()
-                        .spec(request)
-                        .body(authData)
-                        .when()
-                        .post("/Account/v1/Login")
-                        .then()
-                        .spec(responseSpec(200))
-                        .extract().response();
+        ApiSteps apiSteps = new ApiSteps();
+        ProfilePage profilePage = new ProfilePage();
 
-        open("/favicon.ico");
+        UserLoginResponse response = apiSteps.login();
 
-        getWebDriver().manage().addCookie(new Cookie("userId", response.path("userId")));
-        getWebDriver().manage().addCookie(new Cookie("username", response.path("username")));
-        getWebDriver().manage().addCookie(new Cookie("token", response.path("token")));
+        apiSteps.cleanBookList(response.getToken(), response.getUserId());
+
+        AddBookBody bookInfo = new AddBookBody(response.getUserId(),
+                List.of(new AddBookBody.BookIsbn("9781449325862")));
+
+        ApiSteps.addBook(bookInfo, response.getToken());
+
+        ApiSteps.addCookies(response);
+
+        ProfilePage.openPage()
+                .removeAdds()
+                .checkUserName(username)
+                .clickOnDeleteBtn()
+                .clickOkInModal();
+        confirm();
+        profilePage.checkListOfBooksIsEmpty();
+
+        UserResponse userResponse = ApiSteps.userInfo(response.getToken(), response.getUserId());
+
+        assertThat(userResponse.getBooks(),
+                Matchers.empty());
     }
-}
+    }
