@@ -1,5 +1,6 @@
 package tests;
 
+import helpers.WithLogin;
 import models.AddBookBody;
 import models.UserLoginResponse;
 import models.UserResponse;
@@ -18,24 +19,27 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static tests.TestData.username;
 
 public class DeleteBookTest extends BaseTest {
+
+    LoginSteps loginSteps = new LoginSteps();
+    BooksSteps booksSteps = new BooksSteps();
+    ProfilePage profilePage = new ProfilePage();
+    UserLoginResponse userLoginResponse;
+
+    @WithLogin
     @Test
     @DisplayName("Успешное добавление книги в список")
     void successfulDeleteBookTest() {
 
-        LoginSteps apiSteps = new LoginSteps();
-        BooksSteps booksSteps = new BooksSteps();
-        ProfilePage profilePage = new ProfilePage();
+        userLoginResponse = loginSteps.login();
 
-        UserLoginResponse response = apiSteps.login();
+        booksSteps.cleanBookList(userLoginResponse.getToken(), userLoginResponse.getUserId());
 
-        booksSteps.cleanBookList(response.getToken(), response.getUserId());
-
-        AddBookBody bookInfo = new AddBookBody(response.getUserId(),
+        AddBookBody bookInfo = new AddBookBody(userLoginResponse.getUserId(),
                 List.of(new AddBookBody.BookIsbn("9781449325862")));
 
-        booksSteps.addBook(bookInfo, response.getToken());
+        booksSteps.addBook(bookInfo, userLoginResponse.getToken());
 
-        LoginSteps.addCookies(response);
+        // LoginSteps.addCookies(userLoginResponse);
 
         ProfilePage.openPage()
                 .removeAdds()
@@ -45,7 +49,7 @@ public class DeleteBookTest extends BaseTest {
         confirm();
         profilePage.checkListOfBooksIsEmpty();
 
-        UserResponse userResponse = LoginSteps.userInfo(response.getToken(), response.getUserId());
+        UserResponse userResponse = LoginSteps.userInfo(userLoginResponse.getToken(), userLoginResponse.getUserId());
 
         assertThat(userResponse.getBooks(),
                 Matchers.empty());
