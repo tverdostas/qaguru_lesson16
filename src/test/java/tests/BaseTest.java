@@ -23,6 +23,7 @@ public class BaseTest {
         Configuration.browser = System.getProperty("browser", "chrome");
         Configuration.browserVersion = System.getProperty("browser_version", "128.0");
         Configuration.browserSize = System.getProperty("windowSize", "1920x1080");
+        Configuration.headless = true;
         String selenoidPassword = System.getProperty("selenoid_password");
         String selenoidUsername = System.getProperty("selenoid_username");
         if (selenoidPassword != null) {
