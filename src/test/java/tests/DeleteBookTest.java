@@ -6,10 +6,10 @@ import models.UserResponse;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import pages.ProfilePage;
-import steps.ApiSteps;
+import steps.BooksSteps;
+import steps.LoginSteps;
 
 import java.util.List;
 
@@ -19,23 +19,23 @@ import static tests.TestData.username;
 
 public class DeleteBookTest extends BaseTest {
     @Test
-    @Tag("")
-    @DisplayName("")
+    @DisplayName("Успешное добавление книги в список")
     void successfulDeleteBookTest() {
 
-        ApiSteps apiSteps = new ApiSteps();
+        LoginSteps apiSteps = new LoginSteps();
+        BooksSteps booksSteps = new BooksSteps();
         ProfilePage profilePage = new ProfilePage();
 
         UserLoginResponse response = apiSteps.login();
 
-        apiSteps.cleanBookList(response.getToken(), response.getUserId());
+        booksSteps.cleanBookList(response.getToken(), response.getUserId());
 
         AddBookBody bookInfo = new AddBookBody(response.getUserId(),
                 List.of(new AddBookBody.BookIsbn("9781449325862")));
 
-        ApiSteps.addBook(bookInfo, response.getToken());
+        booksSteps.addBook(bookInfo, response.getToken());
 
-        ApiSteps.addCookies(response);
+        LoginSteps.addCookies(response);
 
         ProfilePage.openPage()
                 .removeAdds()
@@ -45,7 +45,7 @@ public class DeleteBookTest extends BaseTest {
         confirm();
         profilePage.checkListOfBooksIsEmpty();
 
-        UserResponse userResponse = ApiSteps.userInfo(response.getToken(), response.getUserId());
+        UserResponse userResponse = LoginSteps.userInfo(response.getToken(), response.getUserId());
 
         assertThat(userResponse.getBooks(),
                 Matchers.empty());

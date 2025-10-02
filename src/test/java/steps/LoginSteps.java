@@ -14,7 +14,7 @@ import static specs.SpecsBookStoreTest.*;
 import static tests.TestData.password;
 import static tests.TestData.username;
 
-public class ApiSteps {
+public class LoginSteps {
 @Step("Добавить куки в запрос")
 public static void addCookies(UserLoginResponse userLoginResponse) {
     open("/favicon.ico");
@@ -33,31 +33,7 @@ public static void addCookies(UserLoginResponse userLoginResponse) {
                 .spec(baseResponseSpec)
                 .extract().as(UserLoginResponse.class);
     }
-    @Step("Отправить запрос на добавление книги в список")
-    public static void addBook(AddBookBody bookData, String token) {
 
-        given(baseRequestSpec)
-                .header("Authorization", "Bearer " + token)
-                .body(bookData)
-                .when()
-                .post("/BookStore/v1/Books")
-                .then()
-                .spec(bookCollectionResponseSpec)
-                .statusCode(201)
-                .extract().response();
-    }
-    @Step("Отправить запрос на очистку списка книг")
-    public static void cleanBookList(String token, String userId) {
-
-        given(baseRequestSpec)
-                .header("Authorization", "Bearer " + token)
-                .queryParams("UserId", userId)
-                .when()
-                .delete("/BookStore/v1/Books")
-                .then()
-                .spec(bookCollectionResponseSpec)
-                .statusCode(204);
-    }
     @Step("Отправить запрос на получение информации по юзеру")
     public static UserResponse userInfo(String token, String userId) {
         return given(baseRequestSpec)
