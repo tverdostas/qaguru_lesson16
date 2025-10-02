@@ -13,25 +13,4 @@ public class UserLoginResponse {
     @JsonProperty("created_date")
     String createdDate;
     String isActive;
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getExpires() {
-        return expires;
-    }
-
 }
