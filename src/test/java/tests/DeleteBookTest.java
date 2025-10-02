@@ -39,8 +39,6 @@ public class DeleteBookTest extends BaseTest {
 
         booksSteps.addBook(bookInfo, userLoginResponse.getToken());
 
-        // LoginSteps.addCookies(userLoginResponse);
-
         ProfilePage.openPage()
                 .removeAdds()
                 .checkUserName(username)
@@ -54,4 +52,4 @@ public class DeleteBookTest extends BaseTest {
         assertThat(userResponse.getBooks(),
                 Matchers.empty());
     }
-    }
+}
